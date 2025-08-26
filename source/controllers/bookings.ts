@@ -67,17 +67,27 @@ async function isBookingPossible(booking: Booking): Promise<bookingOutcome> {
     }
 
     // check 3 : Unit is available for the check-in date
+    const checkOutDate = new Date(booking.checkInDate);
+    checkOutDate.setDate(checkOutDate.getDate() + booking.numberOfNights);
+    // first find all bookings for the same unit where the check-in date is before the requested check-out date
     let isUnitAvailableOnCheckInDate = await prisma.booking.findMany({
         where: {
             AND: {
                 checkInDate: {
-                    equals: new Date(booking.checkInDate),
+                    lt: checkOutDate
                 },
                 unitID: {
                     equals: booking.unitID,
                 }
             }
         }
+    });
+
+    // then filter out the bookings where the check-out date is before the requested check-in date
+    isUnitAvailableOnCheckInDate = isUnitAvailableOnCheckInDate.filter(b => {
+        const bCheckOutDate = new Date(b.checkInDate);
+        bCheckOutDate.setDate(bCheckOutDate.getDate() + b.numberOfNights);
+        return bCheckOutDate > new Date(booking.checkInDate);
     });
     if (isUnitAvailableOnCheckInDate.length > 0) {
         return {result: false, reason: "For the given check-in date, the unit is already occupied"};
