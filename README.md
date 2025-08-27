@@ -70,7 +70,7 @@ To navigate to the swagger docs, open the url http://localhost:8000/api-docs/
 
 There was one failing test in the original code, but has since been fixed.
 I needed to change the code of the test since the original version would still fail even after the bug was fixed.
-This is due to the fact that the original test looks for the response code/data from an OK response, but expects a 400 code, which only happens when in an error response.
+This is due to the fact that the original test looks for the response code/data from an OK response, but expects a 400 code, which only happens when an error response occurs.
 
 In addition, I have added new tests to cover the new feature of modifying an existing booking. The new tests cover the following scenarios:
 - Successfully updating a booking to a new date range that does not overlap with existing bookings.
