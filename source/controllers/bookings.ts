@@ -36,6 +36,12 @@ const createBooking = async (req: Request, res: Response, next: NextFunction) =>
 
 const updateBooking = async (req: Request, res: Response, next: NextFunction) => {
     const updatedBooking: Booking = req.body;
+    console.log(updatedBooking);
+    // validate if all fields are present
+    if (!updatedBooking.guestName || !updatedBooking.unitID || !updatedBooking.checkInDate || !updatedBooking.numberOfNights) {
+        console.log("Fields are incomplete");
+        return res.status(400).json("Missing required fields");
+    }
     let existingBookings = await prisma.booking.findMany({
         where: {
             AND: {
@@ -80,6 +86,7 @@ async function isUpdateBookingPossible(updatedBooking: Booking, existingBookingI
 
     const newCheckOutDate = new Date(updatedBooking.checkInDate);
     newCheckOutDate.setDate(newCheckOutDate.getDate() + updatedBooking.numberOfNights);
+    console.log(newCheckOutDate);
     // Now check if the update would overlap with other bookings
     let overlappingBookings = await prisma.booking.findMany({
         where: {
